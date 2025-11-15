@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Encuesta de satisfacción – Fundación APASCOVI</title>
+
+  <!-- Icono de pestaña / app -->
+  <link rel="icon" type="image/png" href="img/icono.png">
+  <link rel="apple-touch-icon" href="img/icono.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- EmailJS para envío automático -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#ffffff;
+      --border:#e5e7eb;
+      --text:#020617;
+      --muted:#64748b;
+      --accent:#22c55e;      /* botón ENVIAR */
+      --accent-dark:#16a34a;
+      --pdf:#dc2626;          /* botón PDF rojo */
+      --pdf-dark:#b91c1c;
+    }
+
+    *{box-sizing:border-box;}
+
+    html, body{
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    }
+
+    .shell{
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+      padding:8px;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:18px;
+      border:1px solid #1f2937;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    header{
+      padding:18px 22px;
+      background:#020617;
+      color:#e5e7eb;
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+      align-items:center;
+      gap:12px;
+    }
+
+    .header-main{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .logo{
+      width:72px;
+      height:auto;
+      flex-shrink:0;
+    }
+
+    @media(max-width:500px){
+      .logo{width:58px;}
+    }
+
+    header h1{
+      margin:0;
+      font-size:1.8rem;
+    }
+
+    header p{
+      margin:4px 0 0;
+      font-size:1.05rem;
+      color:#cbd5f5;
+    }
+
+    .body{
+      padding:18px 22px 20px;
+      background:#f8fafc;
+      font-size:1.05rem;
+    }
+
+    .notice{
+      background:#e0f2fe;
+      border-left:4px solid #0284c7;
+      padding:12px 14px;
+      border-radius:12px;
+      color:#0f172a;
+      font-size:1.05rem;
+      margin-bottom:18px;
+    }
+
+    fieldset{
+      border:none;
+      margin:0 0 16px;
+      padding:0;
+    }
+
+    legend{
+      font-weight:700;
+      margin-bottom:10px;
+      font-size:1.15rem;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px 18px;
+    }
+
+    @media(max-width:800px){
+      .grid-2{grid-template-columns:1fr;}
+    }
+
+    label{
+      font-size:1rem;
+      display:block;
+      margin-bottom:4px;
+      color:#0f172a;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    textarea,
+    select{
+      width:100%;
+      padding:10px 11px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      font-size:1rem;
+      background:#ffffff;
+    }
+
+    textarea{
+      min-height:90px;
+      resize:vertical;
+    }
+
+    .block-title{
+      margin:18px 0 6px;
+      font-weight:800;
+      font-size:1.25rem;
+      text-transform:uppercase;
+      color:#0f172a;
+    }
+
+    .block-desc{
+      margin:0 0 10px;
+      font-size:1rem;
+      color:var(--muted);
+    }
+
+    .q{
+      background:#ffffff;
+      border-radius:16px;
+      border:1px solid #e2e8f0;
+      padding:14px 12px;
+      margin-bottom:12px;
+    }
+
+    .q-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+
+    .q-text{
+      margin:0;
+      font-size:1.25rem;
+      line-height:1.4;
+      flex:1;
+    }
+
+    .audio-btn{
+      border:none;
+      border-radius:999px;
+      background:#e5e7eb;
+      color:#0f172a;
+      padding:10px 16px;
+      font-size:1rem;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+    }
+
+    .audio-btn:hover{
+      background:#cbd5f5;
+    }
+
+    .audio-btn:focus{
+      outline:2px solid #2563eb;
+      outline-offset:1px;
+    }
+
+    .pictos-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:18px;
+      margin-bottom:10px;
+      align-items:center;
+      justify-content:flex-start;
+    }
+
+    .picto-elem{
+      border:3px solid #000;
+      border-radius:8px;
+      padding:6px;
+      background:#ffffff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .picto-elem img{
+      width:135px;
+      height:135px;
+      object-fit:contain;
+      display:block;
+    }
+
+    .faces3{
+      display:flex;
+      flex-wrap:wrap;
+      gap:40px;
+      margin-top:10px;
+      align-items:flex-start;
+      justify-content:flex-start;
+    }
+
+    .faceopt{
+      display:inline-flex;
+      flex-direction:column;
+      align-items:center;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+
+    .faceopt input{
+      display:none;
+    }
+
+    .face-circle{
+      width:84px;
+      height:84px;
+      border-radius:999px;
+      border:5px solid #e5e7eb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:40px;
+      background:#ffffff;
+      transition:.12s transform,.12s box-shadow,.12s border-color,.12s background-color;
+    }
+
+    .face-no   { border-color:#f97373; color:#b91c1c; }
+    .face-ave  { border-color:#facc15; color:#92400e; }
+    .face-si   { border-color:#4ade80; color:#166534; }
+
+    /* cuando se selecciona, círculo rojo alrededor */
+    .faceopt input:checked + .face-circle{
+      box-shadow:0 0 0 4px rgba(220,38,38,.55);
+      border-color:#dc2626;
+      transform:translateY(-2px) scale(1.04);
+    }
+
+    .faceopt:hover .face-circle{
+      transform:translateY(-1px);
+    }
+
+    .face-caption{
+      margin-top:6px;
+      font-size:1rem;
+      font-weight:700;
+      text-transform:uppercase;
+      text-align:center;
+    }
+
+    /* Pregunta 18 – selección múltiple */
+    .multi-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:10px;
+    }
+
+    .multiopt{
+      display:inline-flex;
+      flex-direction:column;
+      align-items:center;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+
+    .multiopt input{
+      display:none;
+    }
+
+    .multi-tile{
+      width:130px;
+      border-radius:14px;
+      border:2px solid #e5e7eb;
+      background:#ffffff;
+      padding:6px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      transition:.12s transform,.12s box-shadow,.12s border-color,.12s background-color;
+    }
+
+    .multi-tile img{
+      width:96px;
+      height:96px;
+      object-fit:contain;
+    }
+
+    .multiopt input:checked + .multi-tile{
+      border-color:#2563eb;
+      box-shadow:0 0 0 4px rgba(37,99,235,.35);
+      transform:translateY(-2px) scale(1.03);
+      background:#eff6ff;
+    }
+
+    .multi-label{
+      margin-top:4px;
+      font-size:.95rem;
+      font-weight:700;
+      text-align:center;
+    }
+
+    footer{
+      padding:12px 18px;
+      background:#020617;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:10px 18px;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      touch-action:manipulation;
+      min-width:190px;
+      justify-content:center;
+    }
+
+    .btn-pdf{
+      background:var(--pdf);
+      color:#f9fafb;
+    }
+    .btn-pdf:hover{background:var(--pdf-dark);}
+
+    .btn-primary{
+      background:var(--accent);
+      color:#022c22;
+    }
+    .btn-primary:hover{background:var(--accent-dark);}
+
+    .status{
+      font-size:.9rem;
+      color:#e5e7eb;
+      min-height:1.2em;
+      max-width:420px;
+    }
+
+    @media print{
+      body{background:#ffffff;}
+      .shell{max-width:100%;padding:0;margin:0;}
+      .card{box-shadow:none;border:none;border-radius:0;}
+      header, footer{display:none;}
+      .body{padding:10px 12px;}
+      .q{page-break-inside:avoid;}
+      .audio-btn{display:none;}
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <div class="card">
+    <header>
+      <div class="header-main">
+        <img src="img/logo.png" alt="Fundación APASCOVI" class="logo">
+        <div>
+          <h1>Fundación APASCOVI: Tu satisfacción nos importa.</h1>
+          <p>Encuesta de satisfacción para personas usuarias del centro / servicio</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="body">
+      <div class="notice">
+        Mira los dibujos, lee la pregunta y elige <strong>NO</strong>, <strong>A VECES</strong> o <strong>SÍ</strong>.
+        Puedes pedir ayuda a un profesional si lo necesitas.
+      </div>
+
+      <form id="surveyForm">
+        <!-- DATOS GENERALES -->
+        <fieldset>
+          <legend>Datos generales</legend>
+          <div class="grid-2">
+            <div>
+              <label for="centro">Nombre del centro</label>
+              <select id="centro" name="centro">
+                <option value="">Elige una opción…</option>
+                <option value="CENTRO DE DÍA">CENTRO DE DÍA</option>
+                <option value="COFOIL VILLALBA">COFOIL VILLALBA</option>
+                <option value="COFOIL COLMENAREJO">COFOIL COLMENAREJO</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="fecha">Fecha</label>
+              <input type="date" id="fecha" name="fecha">
+            </div>
+
+            <div>
+              <label for="codigo">Código persona usuaria</label>
+              <input type="text" id="codigo" name="codigo" maxlength="4"
+                     placeholder="4 letras o números">
+            </div>
+
+            <div>
+              <label for="antY">Años que llevas en el centro</label>
+              <select id="antY" name="antY">
+                <option value="">Selecciona…</option>
+                <option value="0">0</option>
+                <option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option>
+                <option value="5">5</option><option value="6">6</option>
+                <option value="7">7</option><option value="8">8</option>
+                <option value="9">9</option><option value="10">10</option>
+                <option value="11">11</option><option value="12">12</option>
+                <option value="13">13</option><option value="14">14</option>
+                <option value="15">15</option><option value="16">16</option>
+                <option value="17">17</option><option value="18">18</option>
+                <option value="19">19</option><option value="20">20</option>
+                <option value="21">21</option><option value="22">22</option>
+                <option value="23">23</option><option value="24">24</option>
+                <option value="25">25</option><option value="26">26</option>
+                <option value="27">27</option><option value="28">28</option>
+                <option value="29">29</option><option value="30">30</option>
+                <option value="31">31</option><option value="32">32</option>
+                <option value="33">33</option><option value="34">34</option>
+                <option value="35">35</option><option value="36">36</option>
+                <option value="37">37</option><option value="38">38</option>
+                <option value="39">39</option><option value="40">40</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="antM">Meses que llevas en el centro</label>
+              <select id="antM" name="antM">
+                <option value="">Selecciona…</option>
+                <option value="0">0</option>
+                <option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option>
+                <option value="5">5</option><option value="6">6</option>
+                <option value="7">7</option><option value="8">8</option>
+                <option value="9">9</option><option value="10">10</option>
+                <option value="11">11</option><option value="12">12</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="apoyo">Profesional de apoyo</label>
+              <input type="text" id="apoyo" name="apoyo">
+            </div>
+          </div>
+        </fieldset>
+
+        <div id="questions"></div>
+
+        <fieldset>
+          <legend>Valoración general – comentario libre</legend>
+          <label for="comentarios">¿Quieres añadir alguna sugerencia u opinión?</label>
+          <textarea id="comentarios" name="comentarios"></textarea>
+        </fieldset>
+      </form>
+    </div>
+
+    <footer>
+      <div class="status" id="statusText"></div>
+      <div>
+        <button class="btn btn-pdf" type="button" onclick="window.print()">
+          🧾 Descargar en PDF
+        </button>
+        <button class="btn btn-primary" type="button" onclick="submitSurvey()">
+          📤 Enviar encuesta
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+  /* CONFIG EmailJS */
+  const EMAILJS_SERVICE_ID  = "service_21hna5e";
+  const EMAILJS_TEMPLATE_ID = "template_hk12dtc";
+  const EMAILJS_PUBLIC_KEY  = "DYhSYQdRHJthVBMRU";
+  const DESTINO = "idiaz@apascovi.org";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    renderQuestions();
+  });
+
+  /* AUDIO por pregunta (audio/Q1.mp3, audio/Q2.mp3, etc.) */
+  const audioCache = {};
+  let currentAudio = null;
+
+  function playQuestionAudio(qId){
+    const src = "audio/" + qId + ".mp3";
+    if(!audioCache[qId]){
+      audioCache[qId] = new Audio(src);
+    }
+    const audio = audioCache[qId];
+
+    if(currentAudio && currentAudio !== audio){
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+
+    currentAudio = audio;
+    currentAudio.currentTime = 0;
+
+    currentAudio.play().catch(err=>{
+      console.error("Error reproduciendo audio:", err);
+      alert("No se ha podido reproducir el audio de esta pregunta.\n\nAsegúrate de que existe el archivo:\n" + src);
+    });
+  }
+
+  /* Escala 3 puntos */
+  const THREE_SCALE = [
+    { value: "NO",  label: "No",      emoji: "☹️" },
+    { value: "AVE", label: "A veces", emoji: "😐" },
+    { value: "SI",  label: "Sí",      emoji: "🙂" }
+  ];
+
+  /* PREGUNTAS
+     Ajusta los nombres de las imágenes (src) a los ficheros reales de tu carpeta img/
+  */
+  const QUESTIONS = [
+    /* ENTORNO FÍSICO */
+    {
+      id: "Q1",
+      kind: "scale3",
+      block: "ENTORNO FÍSICO: LAS INSTALACIONES DEL CENTRO Y SU ENTORNO",
+      text: "1. ¿Las zonas comunes y muebles que hay en tu centro son cómodos?",
+      pictos: [
+        { src: "./img/salon.png",   alt: "Sala de estar del centro" },
+        { src: "./img/comedor.png", alt: "Comedor del centro" },
+        { src: "./img/tele.png",    alt: "Persona viendo la televisión" }
+      ]
+    },
+    {
+      id: "Q2",
+      kind: "scale3",
+      block: "ENTORNO FÍSICO: LAS INSTALACIONES DEL CENTRO Y SU ENTORNO",
+      text: "2. ¿Te puedes mover por tu centro de forma fácil y sin obstáculos?",
+      pictos: [
+        { src: "./img/2a_caminar.png",  alt: "Persona caminando" },
+        { src: "./img/2b_tropezar.png", alt: "Persona tropezando con un obstáculo" },
+        { src: "./img/2c_obstaculos.png", alt: "Sala con juguetes y objetos por el suelo" }
+      ]
+    },
+    {
+      id: "Q3",
+      kind: "scale3",
+      block: "ENTORNO FÍSICO: LAS INSTALACIONES DEL CENTRO Y SU ENTORNO",
+      text: "3. ¿Te gusta cómo limpian y cuidan el centro?",
+      pictos: [
+        { src: "./img/3a_limpieza.png", alt: "Productos de limpieza" },
+        { src: "./img/3b_persona_limpia.png", alt: "Persona de limpieza" },
+        { src: "./img/3c_habitacion_cuidada.png", alt: "Habitación ordenada" },
+        { src: "./img/3d_mantenimiento.png", alt: "Mantenimiento y reparaciones" }
+      ]
+    },
+    {
+      id: "Q4",
+      kind: "scale3",
+      block: "ENTORNO FÍSICO: LAS INSTALACIONES DEL CENTRO Y SU ENTORNO",
+      text: "4. ¿El transporte para ir al centro y volver a casa es cómodo y adecuado para ti?",
+      pictos: [
+        { src: "./img/4a_rampa_bus.png", alt: "Rampa del autobús" },
+        { src: "./img/4b_silla_autobus.png", alt: "Persona en silla de ruedas dentro del autobús" }
+      ]
+    },
+
+    /* ATENCIÓN Y CUIDADOS */
+    {
+      id: "Q5",
+      kind: "scale3",
+      block: "ATENCIÓN Y CUIDADOS QUE RECIBES",
+      text: "5. ¿Cuándo tienes un problema, los profesionales del centro te atienden rápido?",
+      pictos: [
+        { src: "./img/5a_pedir_ayuda.png", alt: "Pedir ayuda" },
+        { src: "./img/5b_dolor.png",       alt: "Persona con dolor" },
+        { src: "./img/5c_caida.png",       alt: "Persona que se cae" }
+      ]
+    },
+    {
+      id: "Q6",
+      kind: "scale3",
+      block: "ATENCIÓN Y CUIDADOS QUE RECIBES",
+      text: "6. ¿La atención y los cuidados que recibes cubren bien tus necesidades?",
+      pictos: [
+        { src: "./img/6a_manos_ayudan.png", alt: "Persona recibiendo ayuda" },
+        { src: "./img/6b_pulso.png",        alt: "Medición de pulso" },
+        { src: "./img/6c_profesional_cuida.png", alt: "Profesional acompañando" }
+      ]
+    },
+    {
+      id: "Q7",
+      kind: "scale3",
+      block: "ATENCIÓN Y CUIDADOS QUE RECIBES",
+      text: "7. ¿Te gusta la comida y la bebida del centro (su sabor, cantidad y variedad)?",
+      pictos: [
+        { src: "./img/7a_comida.png",    alt: "Comida" },
+        { src: "./img/7b_bebida.png",    alt: "Bebida" },
+        { src: "./img/7c_mesa_comida.png", alt: "Mesa con menú del día" }
+      ]
+    },
+    {
+      id: "Q8",
+      kind: "scale3",
+      block: "ATENCIÓN Y CUIDADOS QUE RECIBES",
+      text: "8. ¿Te gusta cómo te ayudan con tu higiene personal?",
+      pictos: [
+        { src: "./img/8a_higiene.png",   alt: "Jabón, esponja y peine" },
+        { src: "./img/8b_peluqueria.png",alt: "Persona en la peluquería" },
+        { src: "./img/8c_unas_pies.png", alt: "Corte de uñas de los pies" }
+      ]
+    },
+    {
+      id: "Q9",
+      kind: "scale3",
+      block: "ATENCIÓN Y CUIDADOS QUE RECIBES",
+      text: "9. ¿Las personas que te atienden en el centro saben hacer bien su trabajo?",
+      pictos: [
+        { src: "./img/9a_trabajadora.png", alt: "Trabajadora del centro" },
+        { src: "./img/9b_reunion.png",     alt: "Reunión con profesionales" },
+        { src: "./img/9c_revision_medica.png", alt: "Profesional revisando a una persona" }
+      ]
+    },
+
+    /* RELACIONES Y PARTICIPACIÓN */
+    {
+      id: "Q10",
+      kind: "scale3",
+      block: "RELACIONES Y PARTICIPACIÓN",
+      text: "10. ¿Tienes oportunidades para compartir momentos con otras personas del centro?",
+      pictos: [
+        { src: "./img/10a_conversacion.png", alt: "Personas conversando" },
+        { src: "./img/10b_reunion_silla.png", alt: "Reunión con persona en silla de ruedas" },
+        { src: "./img/10c_grupo_habla.png", alt: "Grupo charlando" }
+      ]
+    },
+    {
+      id: "Q11",
+      kind: "scale3",
+      block: "RELACIONES Y PARTICIPACIÓN",
+      text: "11. ¿El centro te ayuda a hablar o a estar en contacto con tu familia y amistades?",
+      pictos: [
+        { src: "./img/11a_abrazo.png",    alt: "Abrazo" },
+        { src: "./img/11b_videollamada.png", alt: "Videollamada con la familia" },
+        { src: "./img/11c_hablar.png",    alt: "Dos personas hablando" }
+      ]
+    },
+    {
+      id: "Q12",
+      kind: "scale3",
+      block: "RELACIONES Y PARTICIPACIÓN",
+      text: "12. ¿Puedes participar en decisiones importantes como los horarios, la comida y las actividades del centro?",
+      pictos: [
+        { src: "./img/12a_calendario.png", alt: "Calendario" },
+        { src: "./img/12b_despacho.png",   alt: "Persona en un despacho" },
+        { src: "./img/12c_reloj.png",      alt: "Reloj con horario" },
+        { src: "./img/12d_decidir.png",    alt: "Persona tomando una decisión" }
+      ]
+    },
+    {
+      id: "Q13",
+      kind: "scale3",
+      block: "RELACIONES Y PARTICIPACIÓN",
+      text: "13. ¿Los profesionales de tu centro son amables y te tratan con respeto?",
+      pictos: [
+        { src: "./img/13a_trato_digno.png", alt: "Profesional mirando a los ojos" },
+        { src: "./img/13b_entrega.png",     alt: "Persona entregando algo" },
+        { src: "./img/13c_apreton_manos.png", alt: "Apretón de manos" },
+        { src: "./img/13d_apoyo.png",       alt: "Persona apoyando a otra" }
+      ]
+    },
+
+    /* ACTIVIDADES, PRIVACIDAD Y SEGURIDAD */
+    {
+      id: "Q14",
+      kind: "scale3",
+      block: "ACTIVIDADES, PRIVACIDAD Y SEGURIDAD",
+      text: "14. ¿Te gustan las actividades y el entretenimiento que hay en el centro durante el día?",
+      pictos: [
+        { src: "./img/14a_jardin.png",  alt: "Poda de una planta" },
+        { src: "./img/14b_reunion_mesa.png", alt: "Grupo trabajando en la mesa" },
+        { src: "./img/14c_lectura_manualidades.png", alt: "Lectura y manualidades" },
+        { src: "./img/14d_bingo.png", alt: "Juego de bingo" }
+      ]
+    },
+    {
+      id: "Q15",
+      kind: "scale3",
+      block: "ACTIVIDADES, PRIVACIDAD Y SEGURIDAD",
+      text: "15. ¿Los profesionales de tu centro respetan la privacidad y las decisiones que tomas?",
+      pictos: [
+        { src: "./img/15a_persona_privacidad.png", alt: "Persona en su espacio personal" },
+        { src: "./img/15b_llamar_puerta.png",      alt: "Llamar a la puerta" },
+        { src: "./img/15c_circulo_privado.png",    alt: "Persona dentro de un círculo de privacidad" }
+      ]
+    },
+    {
+      id: "Q16",
+      kind: "scale3",
+      block: "ACTIVIDADES, PRIVACIDAD Y SEGURIDAD",
+      text: "16. ¿Te sientes seguro/a en el centro?",
+      pictos: [
+        { src: "./img/16a_apoyo_companero.png", alt: "Persona apoyando a otra" },
+        { src: "./img/16b_grupo_apoyo.png",     alt: "Grupo que se apoya" },
+        { src: "./img/16c_tic_seguridad.png",   alt: "Símbolo de seguridad" },
+        { src: "./img/16d_miedo.png",           alt: "Persona con miedo" }
+      ]
+    },
+    {
+      id: "Q17",
+      kind: "scale3",
+      block: "ACTIVIDADES, PRIVACIDAD Y SEGURIDAD",
+      text: "17. ¿Te gusta estar en el centro?",
+      pictos: [
+        { src: "./img/17a_charla.png",    alt: "Personas charlando" },
+        { src: "./img/17b_dia_centro.png",alt: "Centro con actividades diurnas" },
+        { src: "./img/17c_sofa.png",      alt: "Persona descansando en un sofá" },
+        { src: "./img/17d_centro_vistas.png", alt: "Centro con diferentes espacios" }
+      ]
+    },
+
+    /* VALORACIÓN GLOBAL – MULTISELECCIÓN */
+    {
+      id: "Q18",
+      kind: "multi",
+      block: "VALORACIÓN GLOBAL",
+      text: "18. Señala 3 cosas que mejorarías en el centro:",
+      pictos: [],
+      multiOptions: [
+        { value:"COMPANEROS", label:"COMPAÑEROS", src:"./img/18a_companeros.png", alt:"Compañeros" },
+        { value:"TRABAJADORES", label:"TRABAJADORES", src:"./img/18b_trabajadores.png", alt:"Trabajadores" },
+        { value:"ESPACIOS_MUEBLES", label:"ESPACIOS Y MUEBLES", src:"./img/18c_espacios.png", alt:"Espacios y muebles" },
+        { value:"COMIDAS", label:"COMIDAS", src:"./img/18d_comidas.png", alt:"Comidas" },
+        { value:"ACTIVIDADES", label:"ACTIVIDADES", src:"./img/18e_actividades.png", alt:"Actividades" },
+        { value:"TRANSPORTE", label:"TRANSPORTE", src:"./img/18f_transporte.png", alt:"Transporte" },
+        { value:"CUIDADOS", label:"CUIDADOS", src:"./img/18g_cuidados.png", alt:"Cuidados" }
+      ]
+    }
+  ];
+
+  function renderQuestions(){
+    const container = document.getElementById("questions");
+    let currentBlock = "";
+    QUESTIONS.forEach(q=>{
+      if(q.block && q.block !== currentBlock){
+        currentBlock = q.block;
+        const bt = document.createElement("div");
+        bt.className = "block-title";
+        bt.textContent = currentBlock;
+        container.appendChild(bt);
+
+        const bd = document.createElement("div");
+        bd.className = "block-desc";
+        bd.textContent = "Mira los dibujos, lee la pregunta y elige NO, A VECES o SÍ. En la última pregunta marca 3 cosas.";
+        container.appendChild(bd);
+      }
+
+      const box = document.createElement("div");
+      box.className = "q";
+      box.dataset.qid = q.id;
+
+      /* pictogramas */
+      if(q.pictos && q.pictos.length){
+        const pictosRow = document.createElement("div");
+        pictosRow.className = "pictos-row";
+
+        q.pictos.forEach(pic=>{
+          const wrap = document.createElement("div");
+          wrap.className = "picto-elem";
+
+          const img = document.createElement("img");
+          img.src = pic.src;
+          img.alt = pic.alt || "";
+
+          wrap.appendChild(img);
+          pictosRow.appendChild(wrap);
+        });
+
+        box.appendChild(pictosRow);
+      }
+
+      /* texto pregunta + botón escuchar */
+      const head = document.createElement("div");
+      head.className = "q-head";
+
+      const p = document.createElement("p");
+      p.className = "q-text";
+      p.textContent = q.text;
+      head.appendChild(p);
+
+      const audioBtn = document.createElement("button");
+      audioBtn.type = "button";
+      audioBtn.className = "audio-btn";
+      audioBtn.textContent = "🔊 Escuchar";
+      audioBtn.setAttribute("aria-label","Escuchar la pregunta");
+      audioBtn.addEventListener("click", () => {
+        playQuestionAudio(q.id);
+      });
+      head.appendChild(audioBtn);
+
+      box.appendChild(head);
+
+      /* respuestas */
+      if(q.kind === "multi"){
+        const multi = document.createElement("div");
+        multi.className = "multi-grid";
+
+        q.multiOptions.forEach(opt=>{
+          const label = document.createElement("label");
+          label.className = "multiopt";
+
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.name = q.id;
+          input.value = opt.value;
+
+          const tile = document.createElement("div");
+          tile.className = "multi-tile";
+
+          const img = document.createElement("img");
+          img.src = opt.src;
+          img.alt = opt.alt || "";
+
+          const text = document.createElement("div");
+          text.className = "multi-label";
+          text.textContent = opt.label;
+
+          tile.appendChild(img);
+          tile.appendChild(text);
+
+          label.appendChild(input);
+          label.appendChild(tile);
+          multi.appendChild(label);
+        });
+
+        box.appendChild(multi);
+      } else {
+        const faces = document.createElement("div");
+        faces.className = "faces3";
+
+        THREE_SCALE.forEach(opt=>{
+          const label = document.createElement("label");
+          label.className = "faceopt";
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = q.id;
+          input.value = opt.value;
+
+          const faceCircle = document.createElement("span");
+          faceCircle.className = "face-circle " +
+            (opt.value === "NO" ? "face-no" : opt.value === "AVE" ? "face-ave" : "face-si");
+          faceCircle.textContent = opt.emoji;
+
+          const cap = document.createElement("span");
+          cap.className = "face-caption";
+          cap.textContent = opt.label.toUpperCase();
+
+          label.appendChild(input);
+          label.appendChild(faceCircle);
+          label.appendChild(cap);
+          faces.appendChild(label);
+        });
+
+        box.appendChild(faces);
+      }
+
+      container.appendChild(box);
+    });
+  }
+
+  function getSurveyData(){
+    const form = document.getElementById("surveyForm");
+    const data = {
+      centro: form.centro.value.trim(),
+      codigo: form.codigo.value.trim(),
+      antY: form.antY.value.trim(),
+      antM: form.antM.value.trim(),
+      fecha: form.fecha.value,
+      apoyo: form.apoyo.value.trim(),
+      comentarios: form.comentarios.value.trim(),
+      answers: []
+    };
+
+    QUESTIONS.forEach((q, index)=>{
+      if(q.kind === "multi"){
+        const checks = form.querySelectorAll('input[name="'+q.id+'"]:checked');
+        const values = Array.from(checks).map(c => c.value);
+        const labels = values.map(v=>{
+          const found = q.multiOptions.find(o=>o.value===v);
+          return found ? found.label : v;
+        });
+        data.answers.push({
+          n: index+1,
+          id: q.id,
+          text: q.text,
+          value: values.join(","),
+          label: labels.join(", ")
+        });
+      } else {
+        const sel = form.querySelector('input[name="'+q.id+'"]:checked');
+        let label = "";
+        if(sel){
+          const found = THREE_SCALE.find(s => s.value === sel.value);
+          label = found ? found.label : "";
+        }
+        data.answers.push({
+          n: index+1,
+          id: q.id,
+          text: q.text,
+          value: sel ? sel.value : "",
+          label: label
+        });
+      }
+    });
+
+    return data;
+  }
+
+  function validateSurvey(data){
+    const missing = [];
+    let multi18Error = false;
+
+    QUESTIONS.forEach((q, i)=>{
+      const a = data.answers[i];
+      if(q.kind === "multi"){
+        const selected = a.value ? a.value.split(",").filter(Boolean) : [];
+        if(selected.length === 0){
+          missing.push(a);
+        } else if(selected.length < 3){
+          multi18Error = true;
+        }
+      } else {
+        if(!a.value){
+          missing.push(a);
+        }
+      }
+    });
+
+    /* regla adicional: si años = 0, meses debe ser distinto de 0 */
+    const monthsError = (data.antY === "0" && (!data.antM || data.antM === "0"));
+
+    return { missing, monthsError, multi18Error };
+  }
+
+  function composePlainText(data){
+    const lines = [];
+    lines.push("Fundación APASCOVI: Tu satisfacción nos importa.");
+    lines.push("ENCUESTA DE SATISFACCIÓN – Centro / servicio");
+    lines.push("");
+    lines.push("Centro: " + (data.centro || "(sin indicar)"));
+    lines.push("Código persona usuaria: " + (data.codigo || "(sin indicar)"));
+    const antig = (data.antY ? data.antY+" años " : "") + (data.antM ? data.antM+" meses" : "");
+    lines.push("Antigüedad en el centro: " + (antig || "(sin indicar)"));
+    lines.push("Fecha: " + (data.fecha || "(sin indicar)"));
+    lines.push("Profesional de apoyo: " + (data.apoyo || "(sin indicar)"));
+    lines.push("");
+    lines.push("Escala: NO / A VECES / SÍ (preguntas 1–17)");
+    lines.push("Pregunta 18: selección de aspectos a mejorar.");
+    lines.push("");
+
+    data.answers.forEach(a=>{
+      lines.push(a.text);
+      lines.push("   Respuesta: " + (a.label || "(sin respuesta)") + " [" + (a.value || "-") + "]");
+      lines.push("");
+    });
+
+    if(data.comentarios){
+      lines.push("Comentario libre:");
+      lines.push(data.comentarios);
+      lines.push("");
+    }
+    return lines.join("\n");
+  }
+
+  function setStatus(msg, isError=false){
+    const el = document.getElementById("statusText");
+    el.textContent = msg || "";
+    el.style.color = isError ? "#fecaca" : "#bbf7d0";
+  }
+
+  function scrollToQuestion(qId){
+    const box = document.querySelector('.q[data-qid="'+qId+'"]');
+    if(box){
+      box.scrollIntoView({behavior:"smooth", block:"center"});
+    }
+  }
+
+  function submitSurvey(){
+    const data = getSurveyData();
+    const { missing, monthsError, multi18Error } = validateSurvey(data);
+
+    if(monthsError){
+      alert("Si eliges 0 años en el centro, tienes que indicar cuántos meses llevas.");
+      const mField = document.getElementById("antM");
+      if(mField){ mField.scrollIntoView({behavior:"smooth", block:"center"}); mField.focus(); }
+      return;
+    }
+
+    if(multi18Error){
+      alert("En la pregunta 18 tienes que elegir 3 cosas que mejorarías en el centro.");
+      scrollToQuestion("Q18");
+      return;
+    }
+
+    if(missing.length){
+      alert("Falta contestar alguna pregunta. Recuerda marcar NO, A VECES o SÍ.");
+      const first = missing[0];
+      scrollToQuestion(first.id);
+      return;
+    }
+
+    const textBody = composePlainText(data);
+    setStatus("Enviando encuesta…");
+
+    const params = {
+      to_email: DESTINO,
+      centro: data.centro,
+      fecha: data.fecha,
+      cuerpo_encuesta: textBody
+    };
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+      .then(()=>{
+        setStatus("Encuesta enviada correctamente. Muchas gracias.");
+        document.getElementById("surveyForm").reset();
+      })
+      .catch(err=>{
+        console.error("EmailJS error:", err);
+        setStatus("Error al enviar la encuesta. Revisa la configuración de EmailJS.", true);
+
+        const detalle = err && (err.text || err.message || JSON.stringify(err));
+        alert("Error al enviar la encuesta.\n\nDetalle que devuelve EmailJS:\n" + detalle);
+      });
+  }
+</script>
+</body>
+</html>
